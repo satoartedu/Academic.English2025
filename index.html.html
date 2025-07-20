@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Academic English Cat App</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Academic English Cat ✨</h1>
+    <img src="cat-icon.png" alt="Cat Icon" class="cat-icon" />
+  </header>
+
+  <main>
+    <section id="mode-select">
+      <h2>Select Learning Mode</h2>
+      <button onclick="startMode('sequential')">Sequential Learning</button>
+      <button onclick="startMode('random')">Random Quiz</button>
+    </section>
+
+    <section id="quiz-section" class="hidden">
+      <div id="quiz-card">
+        <h3 id="quiz-title">Let's Learn!</h3>
+        <div id="quiz-question"></div>
+        <input type="text" id="user-answer" placeholder="Type your answer here..." />
+        <button onclick="submitAnswer()">Submit</button>
+        <p id="feedback"></p>
+        <p id="encouragement"></p>
+      </div>
+      <div id="progress"></div>
+    </section>
+
+    <section id="completion" class="hidden">
+      <h2>🎉 Congratulations! 🎉</h2>
+      <img src="flower.png" alt="Flower" class="flower" />
+      <p>You have mastered all 200 academic expressions!</p>
+    </section>
+  </main>
+
+  <script>
+    const words = [
+      { en: "analyze", jp: "分析する" },
+      { en: "approach", jp: "手法・取り組み" },
+      { en: "assess", jp: "評価する" },
+      // ... 略（以下100語続く）
+    ];
+    const expressions = [
+      { en: "It is widely accepted that...", jp: "～は広く認識されている" },
+      { en: "Recent studies suggest that...", jp: "最近の研究は～を示唆している" },
+      // ... 略（以下100構文続く）
+    ];
+
+    let currentList = [];
+    let currentIndex = 0;
+
+    function startMode(mode) {
+      document.getElementById("mode-select").classList.add("hidden");
+      document.getElementById("quiz-section").classList.remove("hidden");
+      currentList = mode === "sequential" ? [...words, ...expressions] : shuffle([...words, ...expressions]);
+      currentIndex = 0;
+      showNextQuestion();
+    }
+
+    function showNextQuestion() {
+      if (currentIndex >= currentList.length) {
+        document.getElementById("quiz-section").classList.add("hidden");
+        document.getElementById("completion").classList.remove("hidden");
+        return;
+      }
+      const item = currentList[currentIndex];
+      document.getElementById("quiz-question").textContent = `Translate into English: "${item.jp}"`;
+      document.getElementById("user-answer").value = "";
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("encouragement").textContent = "";
+    }
+
+    function submitAnswer() {
+      const item = currentList[currentIndex];
+      const userAnswer = document.getElementById("user-answer").value.trim().toLowerCase();
+      const correct = item.en.toLowerCase();
+      const feedback = document.getElementById("feedback");
+      const encouragement = document.getElementById("encouragement");
+      const comments = ["Great job!", "You’re doing fantastic!", "Keep it up!", "Almost there!"];
+
+      if (userAnswer === correct) {
+        feedback.textContent = "✔ Correct!";
+        encouragement.textContent = comments[Math.floor(Math.random() * comments.length)];
+        currentIndex++;
+        setTimeout(showNextQuestion, 1500);
+      } else {
+        feedback.textContent = `❌ Try again. The correct answer is: "${correct}"`;
+      }
+    }
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+  </script>
+</body>
+</html>
